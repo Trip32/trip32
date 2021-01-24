@@ -90,3 +90,7 @@ Compiling you get warning
 /home/ubuntu/Arduino/libraries/HT1621/src/HT1621.h:60:34: warning: ISO C++ forbids converting a string constant to 'char*' [-Wwrite-strings]
   void print(long num, char*flags="%6li", int precision = 0);
 '''
+
+## Debug
+
+Monitor serial is configures on 115200 bauds
