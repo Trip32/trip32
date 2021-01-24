@@ -21,12 +21,16 @@ TinyGPSPlus gps;
 HardwareSerial SerialGPS(1);
 
 // GPS - FIN
-HT1621 lcd;
+HT1621 lcd_1;
+HT1621 lcd_2;
 
-const int ButtonUp = 15;
-const int ButtonDown = 4;
-const int ButtonMenu = 23;
+const int ButtonUp1 = 15;
+const int ButtonDown1 = 4;
+const int ButtonMenu1 = 23;
 
+const int ButtonUp2 = 34;
+const int ButtonDown2 = 14;
+const int ButtonMenu2 = 13;
 
 double lastLat;
 double lastLong;
@@ -38,7 +42,8 @@ String heading;
 
 void(*resetFunc)(void) = 0;
 
-int menu = 1;
+int menu_1 = 1;
+int menu_2 = 1;
 int menu_entries_qty = 5;
 
 // menu = 1 - Speed
@@ -60,43 +65,53 @@ void setup()
 {
   Serial.begin(115200);
   compass.init();
-  pinMode(ButtonUp, INPUT);
-  pinMode(ButtonDown, INPUT);
-  pinMode(ButtonMenu, INPUT);
-  // LCD Data D5 (5)
-  // LCD wr D18 (18)
-  // LCD cs D19 (19)
-  lcd.begin(19, 18, 5); // (cs, wr, Data, backlight)
-  lcd.backlight(); // turn on the backlight led
-  lcd.clear(); // clear the screen
+  pinMode(ButtonUp1, INPUT);
+  pinMode(ButtonDown1, INPUT);
+  pinMode(ButtonMenu1, INPUT);
+  pinMode(ButtonUp2, INPUT);
+  pinMode(ButtonDown2, INPUT);
+  pinMode(ButtonMenu2, INPUT);
+  // lcd_1 Data D5 (5)
+  // lcd_1 wr D18 (18)
+  // lcd_1 cs D19 (19)
+  lcd_1.begin(19, 18, 5); // (cs, wr, Data, backlight)
+  lcd_1.backlight(); // turn on the backlight led
+  lcd_1.clear(); // clear the screen
+  // lcd_2 Data D5 (25)
+  // lcd_2 wr D18 (33)
+  // lcd_2 cs D19 (32)
+  lcd_2.begin(32, 33, 25); // (cs, wr, Data, backlight)
+  lcd_2.backlight(); // turn on the backlight led
+  lcd_2.clear(); // clear the screen
 
   // GPS - INI
-    SerialGPS.begin(GPSBaud, SERIAL_8N1, RXPin, TXPin);
+  SerialGPS.begin(GPSBaud, SERIAL_8N1, RXPin, TXPin);
 
-  Serial.println(F("TEST GPS Arduino Uno"));
-  Serial.println(F("DeviceExample.ino"));
-  Serial.println(F("A simple demonstration of TinyGPS++ with an attached GPS module"));
+  Serial.println(F("TEST GPS ESP32"));
+  Serial.println(F("trip32.ino"));
   Serial.print(F("Testing TinyGPS++ library v. ")); Serial.println(TinyGPSPlus::libraryVersion());
-  Serial.println(F("by Mikal Hart"));
   Serial.println();
   // GPS - FIN
-  lcd.print(999.9, 2);
+  lcd_1.print(999.9, 2);
+  lcd_2.print(999.9, 2);
   myChrono.restart();
 }
 
 void loop()
 {
-  inputButtons();
+  inputButtons(menu_1, lcd_1, digitalRead(ButtonUp1), digitalRead(ButtonDown1), digitalRead(ButtonMenu1));
+  inputButtons(menu_2, lcd_2, digitalRead(ButtonUp2), digitalRead(ButtonDown2), digitalRead(ButtonMenu2));
   getGPS(); // 1 Speed & 2 Trip
   getCAP(); // 3 CAP
   getChrono(); // 4 Chrono
   getAvgSpeed(); // 5 Avg Speed
-  displayInfo();
+  displayInfo(menu_1, lcd_1);
+  displayInfo(menu_2, lcd_2);
   //debugInfo();
 }
 
-void inputButtons(){
-    int Up_button_state = digitalRead(ButtonUp);
+void inputButtons(int menu, HT1621 lcd, int Up_button_state, int Down_button_state, int Menu_button_state ){
+    // int Up_button_state = digitalRead(ButtonUp1);
     if ( Up_button_state == HIGH )
     {
       switch (menu) {
@@ -111,7 +126,7 @@ void inputButtons(){
           break;
       }
     }
-    int Down_button_state = digitalRead(ButtonDown);
+    // int Down_button_state = digitalRead(ButtonDown1);
     if ( Down_button_state == HIGH )
     {
       switch (menu) {
@@ -126,7 +141,7 @@ void inputButtons(){
           break;
       }
     }
-    int Menu_button_state = digitalRead(ButtonMenu);
+    // int Menu_button_state = digitalRead(ButtonMenu1);
     if ( Menu_button_state == HIGH )
     {
       menu += 1;
@@ -139,7 +154,7 @@ void inputButtons(){
     }
 }
 
-void displayInfo()
+void displayInfo(int menu, HT1621 lcd)
 {
     switch (menu) {
       case 1:
@@ -170,8 +185,10 @@ void displayInfo()
 void debugInfo()
 {   
   
-  Serial.print(F("Menu: "));
-  Serial.print(menu);
+  Serial.print(F("Menu 1: "));
+  Serial.print(menu_1);
+  Serial.print(F("Menu 2: "));
+  Serial.print(menu_2);
   Serial.print(F("; 1 - Speed: "));
   Serial.print(speed_kmh);
   Serial.print(F("; 2 - Trip: "));
