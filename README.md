@@ -70,3 +70,23 @@ Tripmaster based on esp32, NEO6 GPS and HMC5883L (QMC5883L)
 - tinygps++ - download zip from https://github.com/mikalhart/TinyGPSPlus and install in arduino ide
 - QMC5883LCompass - Standar downloaded from arduino ide lib manager
 - Chrono.h - download zip from https://github.com/SofaPirate/Chrono and install in arduino ide
+
+## Help
+
+If sending to esp32 you get
+
+'''
+Serial port /dev/ttyUSB0
+Connecting........_____.....__
+'''
+
+push boot buton on esp32
+
+## Bugs
+
+Compiling you get warning
+
+'''
+/home/ubuntu/Arduino/libraries/HT1621/src/HT1621.h:60:34: warning: ISO C++ forbids converting a string constant to 'char*' [-Wwrite-strings]
+  void print(long num, char*flags="%6li", int precision = 0);
+'''
